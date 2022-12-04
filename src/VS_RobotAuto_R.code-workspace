@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "../../VS_RobotAuto_R"
+		},
+		{
+			"name": "VS_RobotAuto_T",
+			"path": "../../VS_RobotAuto_T"
+		},
+		{
+			"name": "VS_RobotAuto_MINI_R",
+			"path": ".."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
