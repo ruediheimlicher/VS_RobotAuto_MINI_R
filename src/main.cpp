@@ -177,7 +177,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   //Serial.printf("%d %d %d %d %d %d \n",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 
 
-  Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
+  //Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
   //Serial.print(canaldata.lx);
   //Serial.print(" ");
   //Serial.print("ly: ");
@@ -197,14 +197,14 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   uint8_t ly = canaldata.y;
   servoimpulsarray[1] = canaldata.ly ;
   writeServoValues(1,  ly);
-  Serial.printf("lx: %d ly: %d \n",lx,ly);
+  //Serial.printf("lx: %d ly: %d \n",lx,ly);
   servoimpulsarray[2] = canaldata.rx ;
   
   servoimpulsarray[3] = canaldata.ry ;
   servoindex = 0;
   paketintervall = PAKETINTERVALL;
   servoimpulsdauer = servoimpulsarray[servoindex];
-  Serial.printf("*servoindex: %d pin: %d servoimpulsdauer: %d\n",servoindex, servopinarray[servoindex] ,servoimpulsdauer);
+  //Serial.printf("*servoindex: %d pin: %d servoimpulsdauer: %d\n",servoindex, servopinarray[servoindex] ,servoimpulsdauer);
 
   paketintervall -= servoimpulsdauer; // 
   digitalWrite(servopinarray[servoindex], HIGH);
@@ -254,7 +254,7 @@ void IRAM_ATTR servoISR()
     servoindex++;
     servoimpulsdauer = servoimpulsarray[servoindex];
     digitalWrite(servopinarray[servoindex], HIGH);
-    timer1_write(servoimpulsdauer * TIMERFAKTOR);
+    timer1_write(servoimpulsdauer * TIMERFAKTOR); //mitte 1500, min 1050, max 1950
 
   }
  
