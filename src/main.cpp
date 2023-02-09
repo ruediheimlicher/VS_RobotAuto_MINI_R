@@ -42,10 +42,10 @@ uint16_t maxwinkel = 180;
 uint8_t buttonstatus = 0;
 uint8_t tonindex = 0;
 void playTon(int ton);
-#define START_TON 1
+#define START_TON 3
 #define LICHT_ON 2
 
-#define TON_PIN 4
+#define TON_PIN 5
 elapsedMillis tonposition;
 
 
@@ -55,7 +55,7 @@ uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0xA4, 0x36, 0x57};
 
 
 
-long unsigned int ledintervall = 100;
+long unsigned int ledintervall = 1000;
 Ticker timer;
 elapsedMillis ledmillis;
 elapsedMillis tonmillis;
@@ -177,7 +177,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   //Serial.printf("%d %d %d %d %d %d \n",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 
 
-  //Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
+  Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
   //Serial.print(canaldata.lx);
   //Serial.print(" ");
   //Serial.print("ly: ");
@@ -204,7 +204,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   servoindex = 0;
   paketintervall = PAKETINTERVALL;
   servoimpulsdauer = servoimpulsarray[servoindex];
-    //Serial.printf("*servoindex: %d pin: %d servoimpulsdauer: %d\n",servoindex, servopinarray[servoindex] ,servoimpulsdauer);
+  Serial.printf("*servoindex: %d pin: %d servoimpulsdauer: %d\n",servoindex, servopinarray[servoindex] ,servoimpulsdauer);
 
   paketintervall -= servoimpulsdauer; // 
   digitalWrite(servopinarray[servoindex], HIGH);
@@ -267,6 +267,10 @@ void setup()
 {
    //Initialize Serial Monitor
   Serial.begin(115200);
+  Serial.println();
+  Serial.print("ESP Board MAC Address:  ");
+  Serial.println(WiFi.macAddress());
+
   pinMode(TON_PIN,OUTPUT);
   pinMode(LED_BUILTIN,OUTPUT);
 
@@ -287,10 +291,7 @@ void setup()
   //Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
-  Serial.println();
-  Serial.print("ESP Board MAC Address:  ");
-  Serial.println(WiFi.macAddress());
-
+  
   
   WiFi.disconnect();
   
@@ -338,7 +339,7 @@ void loop()
     */
 //
 
-    //Serial.println("led");
+    Serial.println("led");
   }
 
   if (buttonstatus & (1<<START_TON))
