@@ -24,6 +24,7 @@
 #define LED_BUILTIN 16
 #endif
 
+//Mini d1: MAC: 48:3f:da:a4:36:57
 
 #define batt A0
 
@@ -167,6 +168,8 @@ void OnDataSent(const uint8_t *mac_addr, uint8_t status) {
  
 }
 
+// MAC: 44:17:93:14:f7:17
+
 //callback function that will be executed when data is received
 void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len) 
 {
@@ -177,7 +180,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   //Serial.printf("%d %d %d %d %d %d \n",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 
 
-  //Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
+  Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
   //Serial.print(canaldata.lx);
   //Serial.print(" ");
   //Serial.print("ly: ");
@@ -325,6 +328,8 @@ void loop()
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
     ubatt = analogRead(A0);
     outdata.x = ubatt;
+    Serial.print("ESP Board MAC Address:  ");
+    Serial.println(WiFi.macAddress());
      //
      /*
      // Test ohne Transmitter
