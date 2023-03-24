@@ -26,7 +26,12 @@
 
 //Mini d1: MAC: 48:3f:da:a4:36:57
 
-#define batt A0
+// Master ESP Board MAC Address:  94:B9:7E:D9:F0:50
+
+
+#define batt_PIN A0
+uint16_t battspannung =0;
+#define ADC_FAKTOR 0.952
 
 #define NUM_SERVOS 4
 
@@ -50,10 +55,15 @@ void playTon(int ton);
 elapsedMillis tonposition;
 
 
-uint16_t ubatt = 0;
+
 
 uint8_t broadcastAddress[] = {0x48, 0x3F, 0xDA, 0xA4, 0x36, 0x57};
+uint8_t masterbroadcastaddress[] = {0x94,0xB9,0x7E, 0xD9,0xF0,0x50};
 
+typedef enum {
+    ESP_NOW_SEND_SUCCESS = 0,       /**< Send ESPNOW data successfully */
+    ESP_NOW_SEND_FAIL,              /**< Send ESPNOW data fail */
+} esp_now_send_status_t;
 
 
 long unsigned int ledintervall = 1000;
@@ -158,15 +168,38 @@ typedef struct canal_struct
 canal_struct canaldata;
 
 canal_struct outdata;
+// Variable to store if sending data was successful
+String success;
+
 
 #define ESP_NOW_SEND_SUCCESS 0
 
 // Callback when data is sent
-void OnDataSent(const uint8_t *mac_addr, uint8_t status) {
+/*
+// von RobotAuto_T
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
   Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
- 
+  if (status ==0){
+    success = "Delivery Success :)";
+  }
+  else{
+    success = "Delivery Fail :(";
+  }
 }
+*/
+// von https://randomnerdtutorials.com/esp-now-esp8266-nodemcu-arduino-ide/
+void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
+  Serial.print("Last Packet Send Status: ");
+  if (sendStatus == 0){
+    Serial.println("Delivery success");
+  }
+  else{
+    Serial.println("Delivery fail");
+  }
+}
+
+
 
 // MAC: 44:17:93:14:f7:17
 
@@ -180,7 +213,7 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   //Serial.printf("%d %d %d %d %d %d \n",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 
 
-  Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
+  //Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
   //Serial.print(canaldata.lx);
   //Serial.print(" ");
   //Serial.print("ly: ");
@@ -309,8 +342,9 @@ void setup()
   // Once ESPNow is successfully Init, we will register for recv CB to
   // get recv packer info
   esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
-  esp_now_register_recv_cb(OnDataRecv);
 
+  esp_now_register_recv_cb(OnDataRecv);
+  esp_now_register_send_cb(OnDataSent);
 }
 
 void loop() 
@@ -326,11 +360,18 @@ void loop()
     //digitalWrite(4,!(digitalRead(4))); 
     ledmillis = 0;
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    ubatt = analogRead(A0);
-    outdata.x = ubatt;
-    Serial.print("ESP Board MAC Address:  ");
-    Serial.println(WiFi.macAddress());
+       //Serial.print("ESP Board MAC Address:  ");
+    //Serial.println(WiFi.macAddress());
+
+    battspannung = analogRead(batt_PIN);
+    float battspannungfloat = battspannung* ADC_FAKTOR;
+    outdata.x = uint16_t(battspannungfloat);
+    Serial.printf("battspannung: %2.2f outdata.x_ %d\n",battspannungfloat, outdata.x);
      //
+     outdata.y = canaldata.lx;
+    //Serial.printf("masterbroadcastaddress[0]: %d x: %d y: %d\n",masterbroadcastaddress[0],outdata.x,outdata.y);
+    uint8_t result = esp_now_send(masterbroadcastaddress, (uint8_t *) &outdata, sizeof(canal_struct));
+    Serial.printf("esp_now_send result: %d\n",result);
      /*
      // Test ohne Transmitter
     servoindex = 0;
