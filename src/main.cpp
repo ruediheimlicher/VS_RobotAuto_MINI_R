@@ -189,6 +189,8 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 }
 */
 // von https://randomnerdtutorials.com/esp-now-esp8266-nodemcu-arduino-ide/
+
+/*
 void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
   Serial.print("Last Packet Send Status: ");
   if (sendStatus == 0){
@@ -198,7 +200,7 @@ void OnDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
     Serial.println("Delivery fail");
   }
 }
-
+*/
 
 
 // MAC: 44:17:93:14:f7:17
@@ -213,7 +215,9 @@ void OnDataRecv(uint8_t * mac, uint8_t *incomingData, uint8_t len)
   //Serial.printf("%d %d %d %d %d %d \n",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
 
 
-  //Serial.printf("lx: %d lx. %d\n", canaldata.lx, canaldata.ly);
+  //Serial.printf("lx: %d lx. %d\t", canaldata.lx, canaldata.ly);
+  //Serial.printf("rx: %d rx. %d\t", canaldata.rx, canaldata.ry);
+  //Serial.printf("x: %d x. %d\n", canaldata.x, canaldata.y);
   //Serial.print(canaldata.lx);
   //Serial.print(" ");
   //Serial.print("ly: ");
@@ -344,7 +348,9 @@ void setup()
   esp_now_set_self_role(ESP_NOW_ROLE_SLAVE);
 
   esp_now_register_recv_cb(OnDataRecv);
-  esp_now_register_send_cb(OnDataSent);
+  
+  
+  //esp_now_register_send_cb(OnDataSent);
 }
 
 void loop() 
@@ -360,32 +366,25 @@ void loop()
     //digitalWrite(4,!(digitalRead(4))); 
     ledmillis = 0;
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-       //Serial.print("ESP Board MAC Address:  ");
+    //Serial.print("ESP Board MAC Address:  ");
     //Serial.println(WiFi.macAddress());
-
+ 
     battspannung = analogRead(batt_PIN);
     float battspannungfloat = battspannung* ADC_FAKTOR;
     outdata.x = uint16_t(battspannungfloat);
-    Serial.printf("battspannung: %2.2f outdata.x_ %d\n",battspannungfloat, outdata.x);
+    Serial.printf("battspannung: %2.2f outdata.x %d\n",battspannungfloat, outdata.x);
      //
      outdata.y = canaldata.lx;
     //Serial.printf("masterbroadcastaddress[0]: %d x: %d y: %d\n",masterbroadcastaddress[0],outdata.x,outdata.y);
+
+  /*
     uint8_t result = esp_now_send(masterbroadcastaddress, (uint8_t *) &outdata, sizeof(canal_struct));
     Serial.printf("esp_now_send result: %d\n",result);
-     /*
-     // Test ohne Transmitter
-    servoindex = 0;
-    paketintervall = PAKETINTERVALL;
-    servoimpulsdauer = servoimpulsarray[servoindex];
-    //Serial.printf("*servoindex: %d pin: %d servoimpulsdauer: %d\n",servoindex, servopinarray[servoindex] ,servoimpulsdauer);
-
-    paketintervall -= servoimpulsdauer; // 
-    digitalWrite(servopinarray[servoindex], HIGH);
-    timer1_write(servoimpulsdauer * TIMERFAKTOR);
-    */
+   */ 
+    
 //
 
-    Serial.println("led");
+    //Serial.println("led");
   }
 
   if (buttonstatus & (1<<START_TON))
